@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import PromptCard from "@models/promptCard";
+import PromptCard from "./PromptCard";
 
 const PromptCardList = ({ data, handleTagClick }) => {
   return (
@@ -24,13 +24,13 @@ const Feed = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch("./api/prompt");
+      const response = await fetch("/api/prompt");
       const data = await response.json();
-
+      console.log("Fetched Posts:", data);
       setPosts(data);
 
-      fetchPosts();
     };
+    fetchPosts();
   }, []);
 
   return (
@@ -46,7 +46,7 @@ const Feed = () => {
         />
       </form>
 
-      <PromptCardList data={[posts]} handleTagClick={() => {}} />
+      <PromptCardList data={posts} handleTagClick={() => {}} />
     </section>
   );
 };

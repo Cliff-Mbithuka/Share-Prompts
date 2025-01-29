@@ -15,6 +15,7 @@ const Home = () => {
 
       {/* Feed  Component*/}
         <Feed/>
+       
     </section>
   );
 };
