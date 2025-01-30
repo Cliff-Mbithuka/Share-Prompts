@@ -5,6 +5,10 @@ export const GET = async (request, {params}) => {
     try {
         await connectToDB();
 
+        if (!params?.id) {
+            return new Response(JSON.stringify({ error: "User ID is required" }), { status: 400 });
+          }
+
         const prompts = await Prompt.find({
             creator: params.id
         }).populate('creator');
