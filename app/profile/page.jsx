@@ -7,26 +7,26 @@ import { useRouter } from 'next/navigation';
 import Profile from '@components/Profile';
 
 const myProfile = () => {
-// const router = useRouter();
+const router = useRouter();
 const {data: session} = useSession();
-const [posts, setPosts] = useState([]);
+const [myPosts, setMyPosts] = useState([]);
 
     useEffect(() => {
         const fetchPosts = async () => {
           const response = await fetch(`/api/users/${session?.user.id}/posts`);
           const data = await response.json();
           
-          setPosts(data);
+          setMyPosts(data);
     
         };
         if(session?.user.id)fetchPosts();
       }, []);
 
-    const handleEdit = () => {
-
+    const handleEdit = (post) => {
+      router.push(`/update-prompt?id=${post._id}`);
     }
 
-    const handleDelete = async () => {
+    const handleDelete = async (post) => {
 
     }
 
@@ -35,7 +35,7 @@ const [posts, setPosts] = useState([]);
       <Profile 
       name="My"
       desc="Welcome to your personolized Profile Page"
-      data={posts}
+      data={myPosts}
       handleEdit={handleEdit}
       handleDelete={handleDelete}
       />
