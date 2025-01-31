@@ -6,6 +6,13 @@ export const GET = async (request, { params }) => {
   try {
     await connectToDB();
 
+    if (!params?.id) {
+      return new Response(
+        JSON.stringify({ error: "User ID is required" }),
+        { status: 400 }
+      );
+    }
+
     const prompt = await Prompt.findById(params.id).populate("creator");
     if (!prompt) return new Response("Prompt not found", { status: 404 });
 
@@ -43,14 +50,31 @@ export const PATCH = async (request, context) => {
 };
 
 // Delete (delete)
-export const DELETE = async (request, context) => {
+// export const DELETE = async (request, context) => {
+//   try {
+
+//     await connectToDB();
+//     const { params } = context;
+
+//     if (!params?.id) return new Response("Invalid request", { status: 400 });
+
+//     await Prompt.findByIdAndDelete(params.id);
+
+//     return new Response("Prompt deleted successfully", { status: 200 });
+//   } catch (error) {
+//     return new Response("Failed to delete the Prompt", { status: 500 });
+//   }
+// };
+export const DELETE = async (request, { params }) => {
   try {
-
     await connectToDB();
-    const { params } = context;
 
-    if (!params?.id) return new Response("Invalid request", { status: 400 });
+    // Check if the id is provided
+    if (!params?.id) {
+      return new Response("Invalid request", { status: 400 });
+    }
 
+    // Proceed with deleting the prompt
     await Prompt.findByIdAndDelete(params.id);
 
     return new Response("Prompt deleted successfully", { status: 200 });
