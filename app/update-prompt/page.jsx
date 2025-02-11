@@ -1,43 +1,27 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Form from "@components/Form";
 
-export const dynamic = "force-dynamic"; // Ensures dynamic rendering
+export const dynamic = "force-dynamic"; // Ensure dynamic rendering
 
-const EditPrompt = () => {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <EditPromptContent />
-    </Suspense>
-  );
-};
-
-const EditPromptContent = () => {
+const EditPrompt = ({ searchParams }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const promptId = searchParams.get("id");
+  const promptId = searchParams?.id;
 
   const [submitting, setSubmitting] = useState(false);
-  const [post, setPost] = useState({
-    prompt: "",
-    tag: "",
-  });
+  const [post, setPost] = useState({ prompt: "", tag: "" });
 
   useEffect(() => {
+    if (!promptId) return;
+    
     const getPromptDetails = async () => {
-      if (!promptId) return;
       try {
         const response = await fetch(`/api/prompt/${promptId}`);
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
-
-        setPost({
-          prompt: data.prompt,
-          tag: data.tag,
-        });
+        setPost({ prompt: data.prompt, tag: data.tag });
       } catch (error) {
         console.error("Error fetching prompt:", error);
       }
@@ -48,20 +32,17 @@ const EditPromptContent = () => {
 
   const updatePrompt = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
-
     if (!promptId) return alert("Prompt Not Found");
 
+    setSubmitting(true);
     try {
       const response = await fetch(`/api/prompt/${promptId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: post.prompt, tag: post.tag }),
+        body: JSON.stringify(post),
       });
 
-      if (response.ok) {
-        router.push("/");
-      }
+      if (response.ok) router.push("/");
     } catch (error) {
       console.error(error);
     } finally {
@@ -70,13 +51,7 @@ const EditPromptContent = () => {
   };
 
   return (
-    <Form
-      type="Edit"
-      post={post}
-      setPost={setPost}
-      submitting={submitting}
-      handleSubmit={updatePrompt}
-    />
+    <Form type="Edit" post={post} setPost={setPost} submitting={submitting} handleSubmit={updatePrompt} />
   );
 };
 
